@@ -38,6 +38,7 @@ dependencies:
   firebase_core: ^2.15.0
   cloud_firestore: ^4.8.3
   flutter_riverpod: ^2.3.6
+  lottie: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/animation/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

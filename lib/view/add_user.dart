@@ -1,35 +1,29 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project1/model/donor_model.dart';
+import 'package:project1/service/add_donor_service.dart';
 
 import '../utils/responsive.dart';
 
 // ignore: must_be_immutable
 class AddUser extends ConsumerWidget {
-  AddUser({super.key});
+  AddUser({
+    Key? key,
+  }) : super(key: key);
 
   final List bloodGroups = ['A+', 'B+', 'AB+', "AB-", "O-", "O+", 'A-', "B-"];
-  final CollectionReference donor =
-      FirebaseFirestore.instance.collection('donor');
+
   String? selectedGroups;
   TextEditingController namecontroller = TextEditingController();
   TextEditingController phonecontroller = TextEditingController();
 
-  void addDonors() {
-    final data = {
-      'Name': namecontroller.text,
-      'group': selectedGroups,
-      'Phone': phonecontroller.text
-    };
-    donor.add(data);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // var updatedData = ref.watch(streamProvider);
+    var donor = ref.watch(donorData);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Users'),
+        title: const Text('Add Users'),
         backgroundColor: Colors.red,
       ),
       body: Column(
@@ -37,7 +31,9 @@ class AddUser extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.all(R.sw(10, context)),
             child: TextField(
-              controller: namecontroller,
+              controller: donor != null
+                  ? TextEditingController(text: donor.name)
+                  : namecontroller,
               decoration: InputDecoration(
                   border: OutlineInputBorder(), label: Text('Donor Name')),
             ),
@@ -45,7 +41,9 @@ class AddUser extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.all(R.sw(10, context)),
             child: TextField(
-              controller: phonecontroller,
+              controller: donor != null
+                  ? TextEditingController(text: donor.number)
+                  : phonecontroller,
               keyboardType: TextInputType.number,
               maxLength: 10,
               decoration: InputDecoration(
@@ -55,22 +53,36 @@ class AddUser extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.all(R.sw(10, context)),
             child: DropdownButtonFormField(
-                decoration: InputDecoration(label: Text('Select blood Group')),
+                decoration: InputDecoration(
+                    label: Text(
+                        donor != null ? donor.group : 'Select blood Group')),
                 items: bloodGroups
                     .map((e) => DropdownMenuItem(
-                          child: Text(e),
                           value: e,
+                          child: Text(e),
                         ))
                     .toList(),
-                onChanged: (val) => selectedGroups = val as String?),
+                onChanged: (val) {
+                  selectedGroups = val as String?;
+                }),
           ),
           Padding(
             padding: EdgeInsets.all(R.sw(10, context)),
             child: ElevatedButton(
               onPressed: () {
-                // DonorService().addDonor();
-                addDonors();
-                Navigator.pop(context);
+                if (namecontroller.text == "" ||
+                    selectedGroups == null ||
+                    phonecontroller.text == "") {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Fill all fields")));
+                } else {
+                  DonorService().addDonor(DonorModel(
+                      name: namecontroller.text,
+                      group: selectedGroups!,
+                      number: phonecontroller.text));
+
+                  Navigator.pop(context);
+                }
               },
               child: Text(
                 'submit',

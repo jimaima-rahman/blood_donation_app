@@ -15,6 +15,8 @@ class DonorModel {
         name: data?['Name'], number: data?['phone'], group: data?['group']);
   }
 
+  get data => null;
+
   Map<String, dynamic> toFirestore() {
     return {'Name': name, 'phone': number, 'group': group};
   }

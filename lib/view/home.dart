@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project1/model/donor_model.dart';
 import 'package:project1/service/add_donor_service.dart';
 import 'package:project1/utils/responsive.dart';
 import 'package:project1/view/add_user.dart';
@@ -12,7 +13,12 @@ class HomePage extends ConsumerWidget {
     var currentdata = ref.watch(streamProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blood Donation'),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: const Text(
+          'Blood Donation',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.red,
       ),
       body: currentdata.when(
@@ -36,7 +42,10 @@ class HomePage extends ConsumerWidget {
                           leading: CircleAvatar(
                             radius: R.sw(25, context),
                             backgroundColor: Colors.red,
-                            child: Text(data.docs[index].data().group),
+                            child: Text(
+                              data.docs[index].data().group,
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           subtitle: Text(data.docs[index].data().number),
                           title: Text(
@@ -49,13 +58,29 @@ class HomePage extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ref.read(donorData.notifier).state =
+                                        DonorModel(
+                                            name: data.docs[index].data().name,
+                                            group:
+                                                data.docs[index].data().group,
+                                            number:
+                                                data.docs[index].data().number);
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddUser();
+                                      },
+                                    ));
+                                  },
                                   icon: Icon(
                                     Icons.edit,
                                     color: Colors.redAccent.shade200,
                                   )),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    DonorService()
+                                        .deleteDonor(data.docs[index].id);
+                                  },
                                   icon: Icon(
                                     Icons.delete,
                                     color: Colors.redAccent,
@@ -89,10 +114,11 @@ class HomePage extends ConsumerWidget {
         backgroundColor: Colors.red,
         child: Icon(
           Icons.add,
-          size: R.sw(40, context),
+          size: R.sw(35, context),
+          color: Colors.white,
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -31,3 +31,4 @@ final donorProvider = Provider<DonorService>((ref) {
 final streamProvider = StreamProvider((ref) {
   return ref.read(donorProvider).donors;
 });
+final donorData = StateProvider<DonorModel?>((ref) => null);
