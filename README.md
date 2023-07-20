@@ -1,6 +1,6 @@
 # project1
 
-A new Flutter project.
+A new Flutter project.a simple project using firebase and riverpod for collecting information of blood donors.
 
 ## Getting Started
 
